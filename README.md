@@ -1,1 +1,1 @@
-An implementation of a Lucene-based retrieval system
+A Java implementation of a Lucene-based retrieval system
