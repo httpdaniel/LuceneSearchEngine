@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -18,6 +19,12 @@ public class CreateIndex {
 
     public static void main (String[] args) throws IOException {
 
+        // Ensure cran files are passed in
+        if (args.length <= 0) {
+            System.out.println("Expected cran files as input");
+            System.exit(1);
+        }
+
         // Analyzer that is used to process text field
         Analyzer analyzer = new StandardAnalyzer();
 
@@ -30,15 +37,28 @@ public class CreateIndex {
 
         IndexWriter iwriter = new IndexWriter(directory, config);
 
-        // TO-DO Create a new document
-        Document doc = new Document();
+        // ArrayList to store documents after parsing
+        ArrayList<Document> documents = createDocuments();
 
-        // Save document to index
-        iwriter.addDocument(doc);
+        // Save documents to index
+        iwriter.addDocuments(documents);
 
         // Commit changes and close
         iwriter.close();
         directory.close();
 
+    }
+
+    public static ArrayList<Document> createDocuments() {
+
+        // Create array list for parsed documents to be stored to
+        ArrayList<Document> docs = new ArrayList<>();
+
+        // Template for creating lucene document
+        Document doc = new Document();
+        docs.add(doc);
+
+        // Return list of documents
+        return docs;
     }
 }
