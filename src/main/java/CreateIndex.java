@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import org.apache.lucene.store.FSDirectory;
 public class CreateIndex {
 
     // Directory where the search index will be saved
-    private static String INDEX_DIRECTORY = "../index";
+    private static final String INDEX_DIRECTORY = "../index";
 
     public static void main (String[] args) throws IOException {
 
@@ -32,7 +35,7 @@ public class CreateIndex {
         IndexWriter iwriter = new IndexWriter(directory, config);
 
         // ArrayList to store documents after parsing
-        ArrayList<Document> documents = createDocuments();
+        ArrayList<Document> documents = getDocuments();
 
         // Save documents to index
         iwriter.addDocuments(documents);
@@ -43,32 +46,98 @@ public class CreateIndex {
 
     }
 
-    public static ArrayList<Document> createDocuments() {
+    public static ArrayList<Document> getDocuments() {
 
-        String cranPath = "../cran/cran.all.1400";
+        // Path for cran documents
+        String cranPath = "/Users/skeleton/IdeaProjects/LuceneSearchEngine/cran/cran.all.1400";
 
         // Create array list for parsed documents to be stored to
         ArrayList<Document> docs = new ArrayList<>();
 
-        // Parse File - TODO
+        // Read in data from cran, parse it, and create documents
+        try {
+            FileReader fr = new FileReader(cranPath);
+            BufferedReader br = new BufferedReader(fr);
 
-        // Template for creating lucene document
-        //Document doc = createDocument(id,title,author,bib,content);
-        //docs.add(doc);
+            String line = "";
+            int id = 0;
+
+            System.out.println("Parsing file..");
+
+            // Parse data
+            while(line != null) {
+                StringBuilder title, author, bib, content;
+                title = new StringBuilder();
+                author = new StringBuilder();
+                bib = new StringBuilder();
+                content = new StringBuilder();
+                line = br.readLine();
+                id++;
+                if (line.startsWith(".I")) {
+                    line = br.readLine();
+                }
+                if (".T".equals(line)) {
+                    line = br.readLine();
+                    while (!line.equals(".A")) {
+                        title.append(line).append(" ");
+                        line = br.readLine();
+                    }
+                    //System.out.println(title + "\n");
+                }
+                if (".A".equals(line)) {
+                    line = br.readLine();
+                    while (!line.equals(".B")) {
+                        author.append(line).append(" ");
+                        line = br.readLine();
+                    }
+                    //System.out.println(author + "\n");
+                }
+                if (".B".equals(line)) {
+                    line = br.readLine();
+                    while (!line.equals(".W")) {
+                        bib.append(line).append(" ");
+                        line = br.readLine();
+                    }
+                    //System.out.println(bib + "\n");
+                }
+                if (".W".equals(line)) {
+                    line = br.readLine();
+                    while (line!=null && !line.contains(".I")) {
+                        content.append(line).append(" ");
+                        line = br.readLine();
+                    }
+                    //System.out.println(content + "\n");
+                }
+
+                Document doc = createDocument(id, title.toString(), author.toString(), bib.toString(), content.toString());
+                docs.add(doc);
+
+            }
+
+            br.close();
+        }
+        catch(FileNotFoundException fnfe) {
+            System.out.println("Unable to open cran file.");
+        }
+        catch(IOException ioe) {
+            System.out.println( "Unable to read cran file.");
+        }
 
         // Return list of documents
         return docs;
     }
 
-    public static Document createDocument(String id, String title, String author, String bib, String content) {
+    public static Document createDocument(int id, String title, String author, String bib, String content) {
 
+        // Create new Lucene document with passed in parameters
         Document document = new Document();
-        document.add(new TextField("ID", id, Field.Store.YES));
+        document.add(new TextField("ID", String.valueOf(id), Field.Store.YES));
         document.add(new TextField("Title", title, Field.Store.YES));
         document.add(new TextField("Author", author, Field.Store.YES));
         document.add(new TextField("Bibliography", bib, Field.Store.YES));
         document.add(new TextField("Content", content, Field.Store.YES));
 
+        // Return Lucene document
         return document;
     }
 }
