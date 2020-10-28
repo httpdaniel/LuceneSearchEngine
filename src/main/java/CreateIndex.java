@@ -19,12 +19,6 @@ public class CreateIndex {
 
     public static void main (String[] args) throws IOException {
 
-        // Ensure cran files are passed in
-        if (args.length <= 0) {
-            System.out.println("Expected cran files as input");
-            System.exit(1);
-        }
-
         // Analyzer that is used to process text field
         Analyzer analyzer = new StandardAnalyzer();
 
@@ -51,14 +45,30 @@ public class CreateIndex {
 
     public static ArrayList<Document> createDocuments() {
 
+        String cranPath = "../cran/cran.all.1400";
+
         // Create array list for parsed documents to be stored to
         ArrayList<Document> docs = new ArrayList<>();
 
+        // Parse File - TODO
+
         // Template for creating lucene document
-        Document doc = new Document();
-        docs.add(doc);
+        //Document doc = createDocument(id,title,author,bib,content);
+        //docs.add(doc);
 
         // Return list of documents
         return docs;
+    }
+
+    public static Document createDocument(String id, String title, String author, String bib, String content) {
+
+        Document document = new Document();
+        document.add(new TextField("ID", id, Field.Store.YES));
+        document.add(new TextField("Title", title, Field.Store.YES));
+        document.add(new TextField("Author", author, Field.Store.YES));
+        document.add(new TextField("Bibliography", bib, Field.Store.YES));
+        document.add(new TextField("Content", content, Field.Store.YES));
+
+        return document;
     }
 }
