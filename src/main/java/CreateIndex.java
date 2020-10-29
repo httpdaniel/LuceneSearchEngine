@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -19,15 +20,16 @@ import org.apache.lucene.store.FSDirectory;
 public class CreateIndex {
 
     // Directory where the search index will be saved
-    private static final String INDEX_DIRECTORY = "../index";
+    private static final String INDEX_DIRECTORY = "index";
 
     public static void main (String[] args) throws IOException {
 
         // Set of stop words for engine to ignore
-        CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
+        //CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
 
         // Custom analyzer that is used to process text field i.e. tokenizing, stop-word removal, stemming
-        Analyzer analyzer = new CustomAnalyzer(stopwords);
+        //Analyzer analyzer = new CustomAnalyzer(stopwords);
+        Analyzer analyzer = new StandardAnalyzer();
 
         // Store index on disk
         Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
