@@ -1,5 +1,6 @@
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
@@ -11,10 +12,10 @@ import java.nio.file.Paths;
 public class QueryEngine {
 
     // Location of search index
-    private static final String INDEX_DIRECTORY = "../index";
+    private static final String INDEX_DIRECTORY = "index";
 
     // Maximum number of returned results
-    private static final int MAX_RESULTS = 10;
+    private static final int MAX_RESULTS = 20;
 
     public static void main(String[] args) throws IOException {
 
@@ -29,14 +30,14 @@ public class QueryEngine {
         BooleanQuery.Builder query = new BooleanQuery.Builder();
 
         // Words that we want to search for and their relevant field
-        Query term1 = new TermQuery(new Term("content", "boundary"));
-        //Query term2 = new TermQuery(new Term("content", "detection"));
-        //Query term3 = new TermQuery(new Term("content", "friction"));
+        Query term1 = new TermQuery(new Term("Content", "boundary"));
+        Query term2 = new TermQuery(new Term("Content", "detection"));
+        //Query term3 = new TermQuery(new Term("Content", "friction"));
 
         // Construct query using boolean operations
         query.add(new BooleanClause(term1, BooleanClause.Occur.SHOULD));    // And
-        //query.add(new BooleanClause(term2, BooleanClause.Occur.MUST));  // Or
-        //query.add(new BooleanClause(term3, BooleanClause.Occur.MUST_NOT));  // Not
+        query.add(new BooleanClause(term2, BooleanClause.Occur.MUST));  // Or
+        //query.add(new BooleanClause(term3, BooleanClause.Occur.MUST));  // Not
 
         // Get set of results from searcher
         ScoreDoc[] hits = isearcher.search(query.build(), MAX_RESULTS).scoreDocs;
@@ -46,7 +47,7 @@ public class QueryEngine {
 
         for (int i = 0; i < hits.length; i++) {
             Document hitDoc = isearcher.doc(hits[i].doc);
-            System.out.println(i + ") " + hitDoc.get("filename") + " " + hits[i].score);
+            System.out.println(i + ") " + hitDoc.get("Title") + " " + hits[i].score);
         }
 
         ireader.close();
