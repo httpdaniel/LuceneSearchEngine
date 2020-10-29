@@ -138,8 +138,6 @@ public class CreateIndex {
         document.add(new TextField("Bibliography", bib, Field.Store.YES));
         document.add(new TextField("Content", content, Field.Store.YES));
 
-        System.out.println(id);
-
         // Return Lucene document
         return document;
     }
