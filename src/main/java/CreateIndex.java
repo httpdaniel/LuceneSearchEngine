@@ -7,9 +7,7 @@ import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -139,6 +137,8 @@ public class CreateIndex {
         document.add(new TextField("Author", author, Field.Store.YES));
         document.add(new TextField("Bibliography", bib, Field.Store.YES));
         document.add(new TextField("Content", content, Field.Store.YES));
+
+        System.out.println(id);
 
         // Return Lucene document
         return document;
