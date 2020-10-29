@@ -29,7 +29,7 @@ public class CreateIndex {
         Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
 
-        // Set new open mode to create new index
+        // Set open mode to create new index
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 
         IndexWriter iwriter = new IndexWriter(directory, config);
@@ -49,7 +49,7 @@ public class CreateIndex {
     public static ArrayList<Document> getDocuments() {
 
         // Path for cran documents
-        String cranPath = "/Users/skeleton/IdeaProjects/LuceneSearchEngine/cran/cran.all.1400";
+        String cranPath = "cran/cran.all.1400";
 
         // Create array list for parsed documents to be stored to
         ArrayList<Document> docs = new ArrayList<>();
@@ -65,6 +65,7 @@ public class CreateIndex {
             System.out.println("Parsing file..");
 
             // Parse data
+            // Checks for identifier i.e. title, reads and stores lines until the next identifier is reached - repeating this cycle
             while(line != null) {
                 StringBuilder title, author, bib, content;
                 title = new StringBuilder();
@@ -82,7 +83,6 @@ public class CreateIndex {
                         title.append(line).append(" ");
                         line = br.readLine();
                     }
-                    //System.out.println(title + "\n");
                 }
                 if (".A".equals(line)) {
                     line = br.readLine();
@@ -90,7 +90,6 @@ public class CreateIndex {
                         author.append(line).append(" ");
                         line = br.readLine();
                     }
-                    //System.out.println(author + "\n");
                 }
                 if (".B".equals(line)) {
                     line = br.readLine();
@@ -98,7 +97,6 @@ public class CreateIndex {
                         bib.append(line).append(" ");
                         line = br.readLine();
                     }
-                    //System.out.println(bib + "\n");
                 }
                 if (".W".equals(line)) {
                     line = br.readLine();
@@ -106,7 +104,6 @@ public class CreateIndex {
                         content.append(line).append(" ");
                         line = br.readLine();
                     }
-                    //System.out.println(content + "\n");
                 }
 
                 Document doc = createDocument(id, title.toString(), author.toString(), bib.toString(), content.toString());
@@ -136,6 +133,8 @@ public class CreateIndex {
         document.add(new TextField("Author", author, Field.Store.YES));
         document.add(new TextField("Bibliography", bib, Field.Store.YES));
         document.add(new TextField("Content", content, Field.Store.YES));
+
+        System.out.println(id);
 
         // Return Lucene document
         return document;
