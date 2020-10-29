@@ -6,6 +6,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -22,8 +25,11 @@ public class CreateIndex {
 
     public static void main (String[] args) throws IOException {
 
-        // Analyzer that is used to process text field
-        Analyzer analyzer = new StandardAnalyzer();
+        // Set of stop words for engine to ignore
+        CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
+
+        // Custom analyzer that is used to process text field i.e. tokenizing, stop-word removal, stemming
+        Analyzer analyzer = new CustomAnalyzer(stopwords);
 
         // Store index on disk
         Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
