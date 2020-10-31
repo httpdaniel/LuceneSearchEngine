@@ -46,17 +46,20 @@ public class QueryEngine {
         boost.put("Content", 0.35f);
 
         MultiFieldQueryParser queryParser = new MultiFieldQueryParser(new String[] {"Title", "Author", "Bibliography", "Content"}, analyzer, boost);
+        queryParser.setAllowLeadingWildcard(true);
 
         // Get list of queries
         ArrayList<String> queries = getQueries();
 
+        int docID = 0;
         // Search and score queries
         for (String q : queries) {
+            docID++;
             Query query = null;
             try {
                 query = queryParser.parse(q);
-            } catch (ParseException pe) {
-                System.out.println("Could not parse query.");
+            } catch (ParseException e) {
+                System.out.println("Unable to parse query.");
             }
 
             // Score documents
@@ -65,9 +68,9 @@ public class QueryEngine {
             // Print the results
             System.out.println("Documents: " + hits.length);
 
-            for (int i = 0; i < hits.length; i++) {
-                Document hitDoc = isearcher.doc(hits[i].doc);
-                System.out.println(i + ") " + hitDoc.get("Title") + " " + hits[i].score);
+            for (ScoreDoc hit : hits) {
+                Document hitDoc = isearcher.doc(hit.doc);
+                System.out.println(docID + " " + "0" + " " + hitDoc.get("ID") + " " + hit.score);
             }
         }
 
