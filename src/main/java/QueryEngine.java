@@ -1,9 +1,13 @@
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -11,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class QueryEngine {
 
@@ -29,20 +34,31 @@ public class QueryEngine {
         DirectoryReader ireader = DirectoryReader.open(directory);
         IndexSearcher isearcher = new IndexSearcher(ireader);
 
+        CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
+        Analyzer analyzer = new CustomAnalyzer(stopwords);
+
+        HashMap<String, Float> boost = new HashMap<>();
+        boost.put("Title", 0.65f);
+        boost.put("Author", 0.04f);
+        boost.put("Bibliography", 0.02f);
+        boost.put("Content", 0.35f);
+
+        MultiFieldQueryParser queryParser = new MultiFieldQueryParser(new String[] {"Title", "Author", "Bibliography", "Content"}, analyzer, boost);
+
         // Builder class for creating a query
         BooleanQuery.Builder query = new BooleanQuery.Builder();
 
         // Get list of queries
-        ArrayList<Query> queries = getQueries();
+        //ArrayList<Query> queries = getQueries();
 
         // Words that we want to search for and their relevant field
         //Query term1 = new TermQuery(new Term("Content", "boundary"));
         //Query term2 = new TermQuery(new Term("Content", "detection"));
         //Query term3 = new TermQuery(new Term("Content", "friction"));
 
-        for (Query value : queries) {
+        /*for (Query value : queries) {
             query.add(new BooleanClause(value, BooleanClause.Occur.SHOULD));
-        }
+        }*/
 
         // Construct query using boolean operations
         //query.add(new BooleanClause(queries.get(0), BooleanClause.Occur.SHOULD));    // And
@@ -98,7 +114,7 @@ public class QueryEngine {
                         line = br.readLine();
                     }
                 }
-                Query query = createQuery(content.toString(), id);
+                Query query = createQuery(content.toString().trim(), id);
                 queries.add(query);
             }
 
