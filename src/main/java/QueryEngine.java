@@ -3,7 +3,7 @@ import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -34,9 +34,11 @@ public class QueryEngine {
         DirectoryReader ireader = DirectoryReader.open(directory);
         IndexSearcher isearcher = new IndexSearcher(ireader);
 
+        // Stopwords and analyzer
         CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
         Analyzer analyzer = new CustomAnalyzer(stopwords);
 
+        // Booster to add weight to more important fields
         HashMap<String, Float> boost = new HashMap<>();
         boost.put("Title", 0.65f);
         boost.put("Author", 0.04f);
@@ -45,49 +47,41 @@ public class QueryEngine {
 
         MultiFieldQueryParser queryParser = new MultiFieldQueryParser(new String[] {"Title", "Author", "Bibliography", "Content"}, analyzer, boost);
 
-        // Builder class for creating a query
-        BooleanQuery.Builder query = new BooleanQuery.Builder();
-
         // Get list of queries
-        //ArrayList<Query> queries = getQueries();
+        ArrayList<String> queries = getQueries();
 
-        // Words that we want to search for and their relevant field
-        //Query term1 = new TermQuery(new Term("Content", "boundary"));
-        //Query term2 = new TermQuery(new Term("Content", "detection"));
-        //Query term3 = new TermQuery(new Term("Content", "friction"));
+        // Search and score queries
+        for (String q : queries) {
+            Query query = null;
+            try {
+                query = queryParser.parse(q);
+            } catch (ParseException pe) {
+                System.out.println("Could not parse query.");
+            }
 
-        /*for (Query value : queries) {
-            query.add(new BooleanClause(value, BooleanClause.Occur.SHOULD));
-        }*/
+            // Score documents
+            ScoreDoc[] hits = isearcher.search(query, MAX_RESULTS).scoreDocs;
 
-        // Construct query using boolean operations
-        //query.add(new BooleanClause(queries.get(0), BooleanClause.Occur.SHOULD));    // And
-        //query.add(new BooleanClause(term1, BooleanClause.Occur.SHOULD));
-        //query.add(new BooleanClause(term2, BooleanClause.Occur.MUST));  // Or
-        //query.add(new BooleanClause(term3, BooleanClause.Occur.MUST));  // Not
+            // Print the results
+            System.out.println("Documents: " + hits.length);
 
-        // Get set of results from searcher
-        ScoreDoc[] hits = isearcher.search(query.build(), MAX_RESULTS).scoreDocs;
-
-        // Print the results
-        System.out.println("Documents: " + hits.length);
-
-        for (int i = 0; i < hits.length; i++) {
-            Document hitDoc = isearcher.doc(hits[i].doc);
-            System.out.println(i + ") " + hitDoc.get("Title") + " " + hits[i].score);
+            for (int i = 0; i < hits.length; i++) {
+                Document hitDoc = isearcher.doc(hits[i].doc);
+                System.out.println(i + ") " + hitDoc.get("Title") + " " + hits[i].score);
+            }
         }
 
         ireader.close();
         directory.close();
     }
 
-    public static ArrayList<Query> getQueries() {
+    public static ArrayList<String> getQueries() {
 
         // Path for cran queries
         String cranPath = "cran/cran.qry";
 
         // Create array list for parsed queries to be added to
-        ArrayList<Query> queries = new ArrayList<>();
+        ArrayList<String> queries = new ArrayList<>();
 
         // Parse file and create Lucene queries
         try {
@@ -114,8 +108,8 @@ public class QueryEngine {
                         line = br.readLine();
                     }
                 }
-                Query query = createQuery(content.toString().trim(), id);
-                queries.add(query);
+                // Add query to array
+                queries.add(content.toString().trim());
             }
 
         } catch (FileNotFoundException fnfe) {
@@ -125,12 +119,6 @@ public class QueryEngine {
         }
 
         return queries;
-    }
-
-    public static Query createQuery(String term, int id) {
-        Query query = new TermQuery(new Term("Content", term));
-        System.out.println(id + term);
-        return query;
     }
 
 }
