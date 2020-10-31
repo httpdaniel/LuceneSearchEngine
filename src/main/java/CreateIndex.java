@@ -28,7 +28,6 @@ public class CreateIndex {
 
         // Custom analyzer that is used to process text field i.e. tokenizing, stop-word removal, stemming
         Analyzer analyzer = new CustomAnalyzer(stopwords);
-        //Analyzer analyzer = new StandardAnalyzer();
 
         // Store index on disk
         Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
