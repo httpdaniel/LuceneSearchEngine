@@ -9,10 +9,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +48,8 @@ public class QueryEngine {
         // Get list of queries
         ArrayList<String> queries = getQueries();
 
+        ArrayList<String> results = new ArrayList<>();
+
         int docID = 0;
         // Search and score queries
         for (String q : queries) {
@@ -65,15 +64,13 @@ public class QueryEngine {
             // Score documents
             ScoreDoc[] hits = isearcher.search(query, MAX_RESULTS).scoreDocs;
 
-            // Print the results
-            System.out.println("Documents: " + hits.length);
-
             for (ScoreDoc hit : hits) {
                 Document hitDoc = isearcher.doc(hit.doc);
-                System.out.println(docID + " " + "0" + " " + hitDoc.get("ID") + " " + hit.score);
+                results.add(docID + " " + "0" + " " + hitDoc.get("ID") + " " + hit.score + "\n");
             }
         }
 
+        writeToFile(results);
         ireader.close();
         directory.close();
     }
@@ -93,14 +90,13 @@ public class QueryEngine {
             BufferedReader br = new BufferedReader(fr);
 
             String line = "";
-            int id = 0;
 
             System.out.println("Parsing Queries...");
 
             while (line!=null) {
                 StringBuilder content = new StringBuilder();
                 line = br.readLine();
-                id++;
+
                 if (line.contains(".I")) {
                     line = br.readLine();
                 }
@@ -122,6 +118,31 @@ public class QueryEngine {
         }
 
         return queries;
+    }
+
+    public static void writeToFile(ArrayList<String> results) {
+        File resultFile = new File("SearchResults.txt");
+        BufferedWriter bw = null;
+
+        try {
+            FileWriter fw = new FileWriter(resultFile);
+            bw = new BufferedWriter(fw);
+
+            for (String res : results) {
+                bw.write(res);
+            }
+
+        } catch (IOException ioe) {
+            System.out.println("Unable to write to file.");
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }
