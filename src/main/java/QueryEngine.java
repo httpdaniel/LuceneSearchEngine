@@ -5,6 +5,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.BooleanSimilarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -34,6 +37,15 @@ public class QueryEngine {
         // Stopwords and analyzer
         CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
         Analyzer analyzer = new CustomAnalyzer(stopwords);
+
+        // Use BM25 similarity for scoring
+        //isearcher.setSimilarity(new BM25Similarity());
+
+        // Use VSM similarity for scoring
+        //isearcher.setSimilarity(new ClassicSimilarity());
+
+        // Use boolean similarity for scoring
+        isearcher.setSimilarity(new BooleanSimilarity());
 
         // Booster to add weight to more important fields
         HashMap<String, Float> boost = new HashMap<>();
@@ -66,7 +78,7 @@ public class QueryEngine {
 
             for (ScoreDoc hit : hits) {
                 Document hitDoc = isearcher.doc(hit.doc);
-                results.add(docID + " " + "0" + " " + hitDoc.get("ID") + " " + hit.score + "\n");
+                results.add(docID + " " + "0" + " " + hitDoc.get("ID") + " " + hit.score + " " + "STD" + "\n");
             }
         }
 
