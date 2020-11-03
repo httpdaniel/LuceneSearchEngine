@@ -18,10 +18,14 @@ $ mvn package
 
 ## Creating an index
 
+For custom analyzer:
 ``` sh
 $ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex 1  // For custom analyser
 ```
+
 Or
+
+For standard analyzer:
 ``` sh
 
 $ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex 2  // For standard analyser
