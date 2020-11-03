@@ -30,6 +30,22 @@ $ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine
 
 The results will be outputted to a file "SearchResults.txt" in the main folder
 
+## Evaluating the results
+
+``` sh
+$ cd trec_eval-9.0.7
+
+$ make
+
+$ ./trec_eval ../cran/cranqrel ../SearchResults.txt
+```
+
+## To display only Mean Average Precision & Recall
+
+``` sh
+$ ./trec_eval -m map -m recall ../cran/cranqrel ../SearchResults.txt
+```
+
 # Results 
 
 Findings from previous experiments can be found in the /results folder for various ranges of scoring functions and evaluations
