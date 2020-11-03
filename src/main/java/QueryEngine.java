@@ -1,6 +1,7 @@
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -27,6 +28,13 @@ public class QueryEngine {
 
     public static void main(String[] args) throws IOException {
 
+        if (args.length != 1 || (!args[0].equals("1") && !args[0].equals("2") && !args[0].equals("3"))) {
+            System.out.println("\nExpecting choice of similarity measure as argument\n\n"
+                    + "Please run again with one of the following arguments:\n"
+                    + "1: BM25 Similarity   2: TF-IDF Similarity   3: Boolean Similarity\n");
+            System.exit(1);
+        }
+
         // Open folder that contains search index
         Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
 
@@ -36,16 +44,39 @@ public class QueryEngine {
 
         // Stopwords and analyzer
         CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
-        Analyzer analyzer = new CustomAnalyzer(stopwords);
 
-        // Use BM25 similarity for scoring
-        isearcher.setSimilarity(new BM25Similarity());
+        Analyzer analyzer = null;
 
-        // Use VSM similarity for scoring
-        //isearcher.setSimilarity(new ClassicSimilarity());
+        if (CreateIndex.analyzerChoice != null) {
+            switch (CreateIndex.analyzerChoice) {
+                case "1":
+                    // Custom analyzer that is used to process text field i.e. tokenizing, stop-word removal, stemming
+                    analyzer = new CustomAnalyzer(stopwords);
+                    break;
+                case "2":
+                    // Standard analyzer
+                    analyzer = new StandardAnalyzer(stopwords);
+                    break;
+            }
+        } else {
+            // Set analyzer
+            analyzer = new CustomAnalyzer(stopwords);
+        }
 
-        // Use boolean similarity for scoring
-        //isearcher.setSimilarity(new BooleanSimilarity());
+        switch (args[0]) {
+            case "1":
+                // Use BM25 similarity for scoring
+                isearcher.setSimilarity(new BM25Similarity());
+                break;
+            case "2":
+                // Use VSM similarity for scoring
+                isearcher.setSimilarity(new ClassicSimilarity());
+                break;
+            case "3":
+                // Use boolean similarity for scoring
+                isearcher.setSimilarity(new BooleanSimilarity());
+                break;
+        }
 
         // Booster to add weight to more important fields
         HashMap<String, Float> boost = new HashMap<>();
