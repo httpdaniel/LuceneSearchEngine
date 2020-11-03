@@ -30,6 +30,6 @@ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine
 
 # Results 
 
-The results will be outputted to a file "SearchResults.txt"
+The results will be outputted to a file "SearchResults.txt" in the main folder
 
 Findings from previous experiments can be found in the /results folder for various ranges of scoring functions and evaluations
