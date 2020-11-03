@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -16,18 +17,40 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+
 public class CreateIndex {
 
     // Directory where the search index will be saved
     private static final String INDEX_DIRECTORY = "index";
+    public static String analyzerChoice;
 
     public static void main (String[] args) throws IOException {
+
+        if (args.length != 1 || (!args[0].equals("1") && !args[0].equals("2"))) {
+            System.out.println("\nExpecting choice of analyzer as argument\n\n"
+                    + "Please run again with one of the following arguments:\n"
+                    + "1: Custom Analyzer   2: Standard Analyzer\n");
+            System.exit(1);
+        }
+
+        analyzerChoice = args[0];
 
         // Set of stop words for engine to ignore
         CharArraySet stopwords = CharArraySet.copy(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
 
-        // Custom analyzer that is used to process text field i.e. tokenizing, stop-word removal, stemming
-        Analyzer analyzer = new CustomAnalyzer(stopwords);
+        // Set analyzer
+        Analyzer analyzer = null;
+
+        switch (args[0]) {
+            case "1":
+                // Custom analyzer that is used to process text field i.e. tokenizing, stop-word removal, stemming
+                analyzer = new CustomAnalyzer(stopwords);
+                break;
+            case "2":
+                // Standard analyzer
+                analyzer = new StandardAnalyzer(stopwords);
+                break;
+        }
 
         // Store index on disk
         Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
