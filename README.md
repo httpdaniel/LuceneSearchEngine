@@ -18,8 +18,18 @@ $ mvn package
 
 ## Creating an index
 
+When running the following command, replace arg for either 1 or 2
+
+1: Custom analyzer 2: Standard analyzer
+
 ``` sh
-$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex 1  // For custom analyser
+```
+Or
+``` sh
+
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex 2  // For standard analyser
+
 ```
 
 ## Querying the engine
