@@ -31,7 +31,19 @@ $ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex 2    // For st
 ## Querying the engine
 
 ``` sh
-$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine 1    // For BM25 Similarity
+```
+
+Or
+
+``` sh
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine 2    // For TF-IDF Similarity
+```
+
+Or
+
+``` sh
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine 3    // For boolean similarity
 ```
 
 The results will be outputted to a file "SearchResults.txt" in the main folder
