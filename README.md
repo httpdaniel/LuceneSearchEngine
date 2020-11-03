@@ -6,30 +6,64 @@ This search engine is built upon the Cranfield collection, a corpus of 1400 text
 
 # Running The Project
 
-## Getting started
+## Building the project
 
-```
-git clone https://github.com/httpdaniel/LuceneSearchEngine.git
+``` sh
+$ git clone https://github.com/httpdaniel/LuceneSearchEngine.git
 
-cd LuceneSearchEngine
+$ cd LuceneSearchEngine
 
-mvn package
+$ mvn package
 ```
 
 ## Creating an index
 
+``` sh
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex 1    // For custom analyser
 ```
-java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex
+
+Or
+
+``` sh
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar CreateIndex 2    // For standard analyser
 ```
 
 ## Querying the engine
 
+``` sh
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine 1    // For BM25 Similarity
 ```
-java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine
+
+Or
+
+``` sh
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine 2    // For TF-IDF Similarity
+```
+
+Or
+
+``` sh
+$ java -cp target/LuceneSearchEngine-1.0-SNAPSHOT.jar QueryEngine 3    // For boolean similarity
+```
+
+The results will be outputted to a file "SearchResults.txt" in the main folder
+
+## Evaluating the results
+
+``` sh
+$ cd trec_eval-9.0.7
+
+$ make
+
+$ ./trec_eval ../cran/cranqrel ../SearchResults.txt
+```
+
+## To display only Mean Average Precision & Recall
+
+``` sh
+$ ./trec_eval -m map -m recall ../cran/cranqrel ../SearchResults.txt
 ```
 
 # Results 
-
-The results will be outputted to a file "SearchResults.txt" in the main folder
 
 Findings from previous experiments can be found in the /results folder for various ranges of scoring functions and evaluations
