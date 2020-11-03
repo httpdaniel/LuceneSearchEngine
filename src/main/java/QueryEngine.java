@@ -39,13 +39,13 @@ public class QueryEngine {
         Analyzer analyzer = new CustomAnalyzer(stopwords);
 
         // Use BM25 similarity for scoring
-        //isearcher.setSimilarity(new BM25Similarity());
+        isearcher.setSimilarity(new BM25Similarity());
 
         // Use VSM similarity for scoring
         //isearcher.setSimilarity(new ClassicSimilarity());
 
         // Use boolean similarity for scoring
-        isearcher.setSimilarity(new BooleanSimilarity());
+        //isearcher.setSimilarity(new BooleanSimilarity());
 
         // Booster to add weight to more important fields
         HashMap<String, Float> boost = new HashMap<>();
@@ -76,9 +76,11 @@ public class QueryEngine {
             // Score documents
             ScoreDoc[] hits = isearcher.search(query, MAX_RESULTS).scoreDocs;
 
+            int rank = 1;
             for (ScoreDoc hit : hits) {
                 Document hitDoc = isearcher.doc(hit.doc);
-                results.add(docID + " " + "0" + " " + hitDoc.get("ID") + " " + hit.score + " " + "STD" + "\n");
+                results.add(docID + " " + "0" + " " + hitDoc.get("ID") + " " + rank + " " + hit.score + " " + "STD\n");
+                rank++;
             }
         }
 
