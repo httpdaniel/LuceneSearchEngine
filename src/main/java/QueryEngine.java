@@ -60,9 +60,11 @@ public class QueryEngine {
         // Get list of queries
         ArrayList<String> queries = getQueries();
 
+        // Store results
         ArrayList<String> results = new ArrayList<>();
 
         int docID = 0;
+
         // Search and score queries
         for (String q : queries) {
             docID++;
