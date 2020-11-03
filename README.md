@@ -2,7 +2,7 @@
 
 A Java implementation of a Lucene-based retrieval system
 
-This search engine is built upon the Cranfield collection, a corpus of 1400 text documents which can be found [here](http://ir.dcs.gla.ac.uk/resources/test_collections/cran/target=_blank)
+This search engine is built upon the Cranfield collection, a corpus of 1400 text documents which can be found [here](http://ir.dcs.gla.ac.uk/resources/test_collections/cran/"target="_blank)
 
 # Running The Project
 
