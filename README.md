@@ -50,6 +50,8 @@ The results will be outputted to a file "SearchResults.txt" in the main folder
 
 ## Evaluating the results
 
+This step requires the installation of trec eval
+
 ``` sh
 $ cd trec_eval-9.0.7
 
